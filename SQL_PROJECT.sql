@@ -129,3 +129,16 @@ order by 1,3;
 select *, max() ,(rollingpoeplevaccination/population)*100 as total_per_vac
 from #temp_pop_vac;
 
+-- Create a View 
+
+create view percentagePopulationVaccinate as
+select cd.continent, cd.date, cd.location, cd.population, cv.new_vaccinations, 
+sum( convert(int,cv.new_vaccinations) ) over ( partition by cd.location order by cd.date ) as rollingpoeplevaccination
+from dbo.CovidDeaths cd
+join dbo.CovidVaccinations cv
+on cd.location = cv.location and cd.date = cv.date
+where cd.continent is not null 
+--order by 1,3;
+
+select * from percentagePopulationVaccinate;
+
